@@ -44,6 +44,11 @@ Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
 
 
 
+$wl = WebRequest-ListDirectory -Username $ftp.User -Password $ftp.Pass -RemoteFolderPath $ftp.Path
+
+
+
+
 
 
 
@@ -77,4 +82,4 @@ $emailParam = @{
     ScriptPath = $scriptPath
     Attachment = $log
 }
-Emailv2 @emailParam
+#mailv2 @emailParam
