@@ -118,5 +118,4 @@ $emailParam = @{
     Attachment = $log
 }
 
-$mailMsg
-#mailv2 @emailParam
+mailv2 @emailParam
