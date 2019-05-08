@@ -38,13 +38,48 @@ Write-Line -Length 50 -Path $log
 
 
 
-
+$workDate = (Get-Date).AddDays(0)
+$workDay  = ($workDate).DayOfWeek.value__ # 0, 1, 2, 3, 4, 5, 6
+if($workDay -eq 0){ $pubcode = @('AT','BO','CH','DC','NJ','NY','NW')
+}else{ $pubcode = @('AT','BO','CH','DC','NJ','NY') }
 $ftp = Get-WJFTP -Name Oohla
+
+Write-Log -Verb "workDate" -Noun $workDate.ToString("yyyyMMdd") -Path $log -Type Short -Status Normal
+Write-Log -Verb "workDay" -Noun $workDay -Path $log -Type Short -Status Normal
+Write-Log -Verb "pubcode" -Noun ([string]$pubcode) -Path $log -Type Short -Status Normal
 Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
 
+$pubcode | ForEach-Object{
 
+    $pub = $_
+    $remotePath = $ftp.Path + $pub + '/'
+    $wl = WebRequest-ListDirectory -Username $ftp.User -Password $ftp.Pass -RemoteFolderPath $remotePath
 
-$wl = WebRequest-ListDirectory -Username $ftp.User -Password $ftp.Pass -RemoteFolderPath $ftp.Path
+    Write-Log -Verb "CHECK" -Noun $remotePath -Path $log -Type Long -Status Normal
+    Write-Log -Verb $wl.Verb -Noun $wl.List -Path $log -Type Long -Status $wl.Status
+
+    if($wl.Status -eq "Bad"){
+
+        $mailMsg = $mailMsg + (Write-Log -Verb $wl.Verb -Noun $wl.Noun -Path $log -Type Long -Status $wl.Status -Output String) + "`n"
+        $hasError = $true
+
+    }else{
+
+        if(($wl.List).Count -gt 0){
+
+            $mailMsg = $mailMsg + (Write-Log -Verb $remotePath -Noun ((($wl.List).Count).ToString()+" files") -Path $log -Type Long -Status Good -Output String) + "`n"
+
+        }else{
+
+            $mailMsg = $mailMsg + (Write-Log -Verb $remotePath -Noun ((($wl.List).Count).ToString()+" files") -Path $log -Type Long -Status Bad -Output String) + "`n"
+            $hasError = $true
+
+        }
+
+    }
+
+}
+
 
 
 
@@ -82,4 +117,6 @@ $emailParam = @{
     ScriptPath = $scriptPath
     Attachment = $log
 }
+
+$mailMsg
 #mailv2 @emailParam
