@@ -117,5 +117,4 @@ $emailParam = @{
     ScriptPath = $scriptPath
     Attachment = $log
 }
-
-mailv2 @emailParam
+Emailv2 @emailParam
