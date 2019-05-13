@@ -38,14 +38,10 @@ Write-Line -Length 50 -Path $log
 
 
 
-$workDate = (Get-Date).AddDays(0)
-$workDay  = ($workDate).DayOfWeek.value__ # 0, 1, 2, 3, 4, 5, 6
-if($workDay -eq 0){ $pubcode = @('AT','BO','CH','DC','NJ','NY','NW')
-}else{ $pubcode = @('AT','BO','CH','DC','NJ','NY') }
+
+$pubcode = @('AT','BO','CH','DC','NJ','NY')
 $ftp = Get-WJFTP -Name Oohla
 
-Write-Log -Verb "workDate" -Noun $workDate.ToString("yyyyMMdd") -Path $log -Type Short -Status Normal
-Write-Log -Verb "workDay" -Noun $workDay -Path $log -Type Short -Status Normal
 Write-Log -Verb "pubcode" -Noun ([string]$pubcode) -Path $log -Type Short -Status Normal
 Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
 
@@ -79,10 +75,6 @@ $pubcode | ForEach-Object{
     }
 
 }
-
-
-
-
 
 
 
